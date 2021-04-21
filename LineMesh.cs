@@ -56,7 +56,7 @@ public class Line {
         int lastCharIdx = end - 1;
         for (int i = start; i < end; ++i) {
             if (characters[i].cursorPos[0] > characters[i + 1].cursorPos[0]) {
-                width = characters[i].cursorPos[0] - characters[start].cursorPos[0];
+                width = characters[i].cursorPos[0] + characters[i].charWidth - characters[start].cursorPos[0];
                 break;
             }
 
