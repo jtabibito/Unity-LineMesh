@@ -16,26 +16,28 @@ public class Line {
     public Vector2 size = Vector2.one;
     public Vector2 pivot = Vector2.zero;
     public Color color = Color.black;
+    public float scale = 1;
 
     public Line(Text text, LineType type, int index) {
         var characters = text.cachedTextGenerator.characters;
         var lines = text.cachedTextGenerator.lines[index];
         UICharInfo charInfo = characters[lines.startCharIdx];
-        position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type));
-        size = new Vector2(GetWidth(characters, lines.startCharIdx, characters.Count - 1),
+        scale = text.rectTransform.offsetMin[0] / characters[lines.startCharIdx].cursorPos[0];
+        position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type)) * scale;
+        size = new Vector2(GetWidth(characters, lines.startCharIdx, characters.Count - 1) * scale,
             text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f);
         color = text.color;
         SetPivot(text.alignment);
     }
 
-    public Line(Text text, LineType type, int index, int start, int length) {
-        UICharInfo charInfo = text.cachedTextGenerator.characters[start];
-        position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type));
-        size = new Vector2(GetWidth(text.cachedTextGenerator.characters, start, length - 1),
-            text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f);
-        color = text.color;
-        SetPivot(text.alignment);
-    }
+    // public Line(Text text, LineType type, int index, int start, int length) {
+    //     UICharInfo charInfo = text.cachedTextGenerator.characters[start];
+    //     position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type));
+    //     size = new Vector2(GetWidth(text.cachedTextGenerator.characters, start, length - 1),
+    //         text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f);
+    //     color = text.color;
+    //     SetPivot(text.alignment);
+    // }
 
     float GetTypeWeight(LineType type) {
         switch (type) {
