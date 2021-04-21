@@ -22,7 +22,7 @@ public class Line {
         var characters = text.cachedTextGenerator.characters;
         var lines = text.cachedTextGenerator.lines[index];
         UICharInfo charInfo = characters[lines.startCharIdx];
-        scale = text.rectTransform.offsetMin[0] / characters[lines.startCharIdx].cursorPos[0];
+        scale = characters[lines.startCharIdx].cursorPos[0] == 0 ? 1 : text.rectTransform.offsetMin[0] / characters[lines.startCharIdx].cursorPos[0];
         position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type)) * scale;
         size = new Vector2(GetWidth(characters, lines.startCharIdx, characters.Count - 1) * scale,
             text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f);
