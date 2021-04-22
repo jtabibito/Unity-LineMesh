@@ -16,15 +16,13 @@ public class Line {
     public Vector2 size = Vector2.one;
     public Vector2 pivot = Vector2.zero;
     public Color color = Color.black;
-    public float scale = 1;
 
     public Line(Text text, LineType type, int index) {
         var characters = text.cachedTextGenerator.characters;
         var lines = text.cachedTextGenerator.lines[index];
         UICharInfo charInfo = characters[lines.startCharIdx];
-        scale = characters[lines.startCharIdx].cursorPos[0] == 0 ? 1 : text.rectTransform.offsetMin[0] / characters[lines.startCharIdx].cursorPos[0];
-        position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type)) * scale;
-        size = new Vector2(GetWidth(characters, lines.startCharIdx, characters.Count - 1) * scale,
+        position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type));
+        size = new Vector2(GetWidth(characters, lines.startCharIdx, characters.Count - 1),
             text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f);
         color = text.color;
         SetPivot(text.alignment);
@@ -109,7 +107,7 @@ public class LineMesh : MonoBehaviour {
     public LineType type = LineType.none;
 
     private bool isInitialize = false;
-    
+
     private int characterCount = 0;
     private LineType currentType = LineType.none;
     private Color currentColor = Color.white;
@@ -127,7 +125,7 @@ public class LineMesh : MonoBehaviour {
     // 上划线
     //private const string underLineEvaluator = @"<up>.*</up>";
     //private const string underLineContentEvaluator = @"(?<=<up>).*(?=</up>)";
-    
+
     // 下划线
     //private const string underLineEvaluator = @"<un>.*</un>";
     //private const string underLineContentEvaluator = @"(?<=<un>).*(?=</un>)";
