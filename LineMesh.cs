@@ -28,7 +28,7 @@ public class Line {
         size = new Vector2(GetWidth(characters, lines.startCharIdx, characters.Count - 1, text.rectTransform.rect.width),
             text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f) * scaleFactor;
         color = text.color;
-        SetPivot(text.alignment);
+        pivot = Text.GetTextAnchorPivot(text.alignment);
     }
 
     // public Line(Text text, LineType type, int index, int start, int length) {
@@ -81,41 +81,6 @@ public class Line {
             return new Vector2(width * 0.5f, y);
         default:
             return new Vector2(-width * 0.5f, y);
-        }
-    }
-
-    void SetPivot(TextAnchor anchor) {
-        switch (anchor) {
-        case TextAnchor.LowerLeft:
-            pivot = Vector2.zero;
-            break;
-        case TextAnchor.LowerCenter:
-            pivot = new Vector2(0.5f, 0);
-            break;
-        case TextAnchor.LowerRight:
-            pivot = new Vector2(1, 0);
-            break;
-        case TextAnchor.MiddleLeft:
-            pivot = new Vector2(0, 0.5f);
-            break;
-        case TextAnchor.MiddleCenter:
-            pivot = Vector2.one * 0.5f;
-            break;
-        case TextAnchor.MiddleRight:
-            pivot = new Vector2(1, 0.5f);
-            break;
-        case TextAnchor.UpperLeft:
-            pivot = new Vector2(0, 1);
-            break;
-        case TextAnchor.UpperCenter:
-            pivot = new Vector2(0.5f, 1);
-            break;
-        case TextAnchor.UpperRight:
-            pivot = Vector2.one;
-            break;
-        default:
-            pivot = Vector2.zero;
-            break;
         }
     }
 }
