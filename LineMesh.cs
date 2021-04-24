@@ -21,15 +21,14 @@ public class Line {
         var characters = text.cachedTextGenerator.characters;
         var lines = text.cachedTextGenerator.lines[index];
         UICharInfo charInfo = characters[lines.startCharIdx];
-        position = new Vector2(charInfo.cursorPos.x, charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type));
+        CanvasScaler cs = text.GetComponentInParent<CanvasScaler>();
+        float scaleFactor = (Screen.width * cs.referenceResolution[1] / (Screen.height * cs.referenceResolution[0])) >= 1 ? cs.referenceResolution[1] / Screen.height : cs.referenceResolution[0] / Screen.width;
+        position = CalculatePosition(text.alignment, text.rectTransform.rect.width,
+            (charInfo.cursorPos.y - text.cachedTextGenerator.lines[index].height * GetTypeWeight(type)) * scaleFactor);
         size = new Vector2(GetWidth(characters, lines.startCharIdx, characters.Count - 1, text.rectTransform.rect.width),
-            text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f);
+            text.fontSize * 0.1f == 0 ? float.Epsilon : text.fontSize * 0.1f) * scaleFactor;
         color = text.color;
         SetPivot(text.alignment);
-        position[0] = position[0] + CalculatePosition(text.alignment, size[0]);
-        float scale = CalculateScaleFactor(text.alignment, position[0], text.rectTransform.rect.width * 0.5f);
-        position[0] *= scale;
-        size[0] *= scale;
     }
 
     // public Line(Text text, LineType type, int index, int start, int length) {
@@ -70,22 +69,18 @@ public class Line {
         return num >= width ? width * 0.5f : num;
     }
 
-    float CalculateScaleFactor(TextAnchor anchor, float start, float left) {
-        return Mathf.Abs(left / start);
-    }
-
-    float CalculatePosition(TextAnchor anchor, float width) {
+    public Vector2 CalculatePosition(TextAnchor anchor, float width, float y) {
         switch (anchor) {
         case TextAnchor.MiddleCenter:
         case TextAnchor.UpperCenter:
         case TextAnchor.LowerCenter:
-            return 0;
+            return Vector2.up * y;
         case TextAnchor.MiddleRight:
         case TextAnchor.UpperRight:
         case TextAnchor.LowerRight:
-            return width;
+            return new Vector2(width * 0.5f, y);
         default:
-            return 0;
+            return new Vector2(-width * 0.5f, y);
         }
     }
 
@@ -137,7 +132,6 @@ public class LineMesh : MonoBehaviour {
     private FontStyle currentFontStyle;
     private TextAnchor currentAnchor;
     private float lineSpacing;
-    private RectTransform canvas;
 
     private List<Image> lines;
 
@@ -156,7 +150,6 @@ public class LineMesh : MonoBehaviour {
 
     private void Awake() {
         text = this.GetComponent<Text>();
-        canvas = GameObject.Find("Global/UI/TheStoreCanvas").GetComponent<RectTransform>();
         lines = new List<Image>();
     }
 
@@ -196,6 +189,8 @@ public class LineMesh : MonoBehaviour {
         List<Line> lineInfos = new List<Line>();
         for (int j = 0; j < text.cachedTextGenerator.lineCount; ++j) {
             Line line = new Line(text, type, j);
+            if (line.size[0] == 0 || line.size[1] == 0)
+                continue;
             lineInfos.Add(line);
         }
         return lineInfos;
